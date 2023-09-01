@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital@1&family=Josefin+Sans:wght@300;400&display=swap');
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+  
+  font-family: 'Exo 2', sans-serif;
+font-family: 'Josefin Sans', sans-serif;
+}
+
+.links{
+  font-family: 'Exo 2', sans-serif;
+}
+
+.links a {
+  @apply text-black hover:text-blue-400
+}
+.links a.active{
+  @apply text-red-400
+}
+
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000; /* Gerekirse, içerik üzerinde kalması için z-index ayarlayabilirsiniz */
+}
+.swiper-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes gradientChange {
+  0%, 100% {
+    background-position: 0 0;
+  }
+  25% {
+    background-position: 100% 0;
+  }
+  50% {
+    background-position: 0 100%;
+  }
+  75% {
+    background-position: 100% 100%;
+  }
+}
+
+.animate-gradient-change {
+  background-image: linear-gradient(to right, #3498db, #e74c3c, #2ecc71); /* Değiştirilmiş renkler */
+  background-size: 200% 200%;
+  animation: gradientChange 4s linear infinite; /* 4 saniyede bir sürekli tekrarlanan animasyon */
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 900;
+}
+
+
+
+
+.svg{
+  fill: #6822bf;
+}
+.entry{
+  @apply bg-cover bg-center bg-fixed;
+  background-image: url('https://img.freepik.com/free-photo/back-view-crowd-fans-watching-live-performance-music-concert-night-copy-space_637285-544.jpg?w=2000&t=st=1693086187~exp=1693086787~hmac=76e076aadcbfe47e0abf978a72f30e39cce8d75004a0235ab9b8f93a92ebd6b9');
+}
+
