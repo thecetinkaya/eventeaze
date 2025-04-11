@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -6,11 +6,13 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import dayjs from "dayjs";
+import PropTypes from "prop-types";
 
 const Home = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // API'den etkinlik verilerini çekme
   useEffect(() => {
@@ -21,9 +23,11 @@ const Home = () => {
       .then((response) => response.json())
       .then((result) => {
         setData(result);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("API request error:", error);
+        setLoading(false);
       });
   }, []);
 
@@ -162,7 +166,7 @@ const Home = () => {
         </div>
       )}
       {/* Arama sonuçlarını gösterme */}
-      {showSearchResults && filteredData.length === 0 && (
+      {loading && showSearchResults && filteredData.length === 0 && (
         <p className="text-center text-lg mt-4 h-[calc(100vh-210px)] flex justify-center items-center">
           Böyle bir etkinlik yok
         </p>
@@ -178,21 +182,21 @@ const Home = () => {
       ) : (
         !showSearchResults && (
           <>
-            {data.filter((item) => item?.Tur === "SERGİ").length > 1 && (
+            {data.filter((item) => item?.Tur === "SİNEMA").length > 1 && (
               <EventGroup
                 title="SİNEMA"
                 data={data.filter((item) => item?.Tur === "SİNEMA")}
                 handleEventClick={handleEventClick}
               />
             )}
-            {data.filter((item) => item?.Tur === "SERGİ").length > 1 && (
+            {data.filter((item) => item?.Tur === "TİYATRO").length > 1 && (
               <EventGroup
                 title="TİYATRO"
                 data={data.filter((item) => item?.Tur === "TİYATRO")}
                 handleEventClick={handleEventClick}
               />
             )}
-            {data.filter((item) => item?.Tur === "SERGİ").length > 1 && (
+            {data.filter((item) => item?.Tur === "KONSER").length > 1 && (
               <EventGroup
                 title="KONSER"
                 data={data.filter((item) => item?.Tur === "KONSER")}
@@ -224,57 +228,65 @@ const Home = () => {
 function EventGroup({ title, data, handleEventClick }) {
   return (
     <div className={title.toLowerCase()}>
-      <h1 className="text-4xl dark:text-white font-bold text-center my-auto">
+      <h1 className="text-4xl dark:text-white font-bold text-center my-6">
         {title}
       </h1>
 
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={40}
-        slidesPerView={5}
+        slidesPerView={1}
         autoplay={{ delay: 3000 }}
+        breakpoints={{
+          640: { slidesPerView: 1 },
+          768: { slidesPerView: 2 },
+          1024: { slidesPerView: 3 },
+          1280: { slidesPerView: 4 },
+        }}
         loop={true}
+        navigation
+        pagination={{ clickable: true }}
       >
-        <div className="flex flex-row justify-center">
-          {data.map((item) => (
-            <SwiperSlide
-              key={item?.Id}
-              className="flex flex-col items-center relative"
-            >
-              <div className="absolute top-0 left-0 text-sm bg-black dark:bg-blue-800 dark:text-white text-white px-5 py-2 rounded-tr-md">
-                <span className="opacity-70">{item?.Tur}</span>
-              </div>
-              <div
-                className={`absolute top-0 right-0 text-sm ${
-                  item?.UcretsizMi ? "bg-green-600" : "bg-red-600"
-                } bg-opacity-80 dark:bg-blue-800 dark:text-white text-white px-5 py-2 rounded-tr-md`}
-              >
-                <span className="opacity-70">
-                  {item?.UcretsizMi ? "Ücretsiz" : "Ücretli"}
-                </span>
-              </div>
-              <div
-                className={`absolute bottom-14 left-0 text-sm bg-opacity-80 dark:bg-blue-800 dark:text-white text-white px-5 py-2 rounded-bl-md`}
-              >
-                <p>
+        {data.map((item) => (
+          <SwiperSlide
+            key={item?.Id}
+            className="flex flex-col items-center relative cursor-pointer"
+            onClick={() => handleEventClick(item)}
+          >
+            <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md w-full h-[300px] flex flex-col justify-between">
+              <img
+                src={item?.Resim}
+                alt={item?.Adi}
+                className="w-full h-[200px] object-cover"
+              />
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-center dark:text-white">
+                  {item?.Adi}
+                </h3>
+                <p className="text-sm text-center text-gray-500">
                   {dayjs(item.EtkinlikBaslamaTarihi).format(
                     "DD/MM/YYYY - HH:mm"
                   )}
                 </p>
               </div>
-              <img
-                src={item?.Resim}
-                className="rounded-lg w-full h-auto m-2"
-                alt={item?.Adi}
-                onClick={() => handleEventClick(item)}
-              />
-              <p className="text-xl dark:text-white text-center">{item?.Adi}</p>
-            </SwiperSlide>
-          ))}
-        </div>
+            </div>
+          </SwiperSlide>
+        ))}
       </Swiper>
     </div>
   );
 }
+EventGroup.propTypes = {
+  title: PropTypes.string.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      Id: PropTypes.number,
+      Adi: PropTypes.string,
+      Resim: PropTypes.string,
+      EtkinlikBaslamaTarihi: PropTypes.string,
+    })
+  ).isRequired,
+  handleEventClick: PropTypes.func.isRequired,
+};
 
 export default Home;

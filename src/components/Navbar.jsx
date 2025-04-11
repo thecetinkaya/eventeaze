@@ -1,5 +1,5 @@
-import { Brightness4, DarkMode, LightMode } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
+import { DarkMode, LightMode } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
@@ -42,7 +42,7 @@ const Navbar = () => {
       <div className="links flex items-center justify-between">
         <span className="logo text-2xl animate-gradient-change">EventEaze</span>
         <div className="flex items-center">
-          <NavLink className="dark:text-white text-xl" to="/home">
+          <NavLink className="dark:text-white text-xl" to="/">
             Home
           </NavLink>
           <div
